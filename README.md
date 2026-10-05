@@ -38,3 +38,14 @@ docker compose up --build
 |------|------|------|
 | K12+180 | 1.2 mm | 合格 |
 | K18+040 | 5.6 mm | 超限 |
+
+## 掌子面爆破窗封锁
+
+页眉「爆破窗」专页：测量员选断面（桩号）并填起止时刻下发爆破窗，窗内该断面测缝报送整体锁死。
+
+- 窗内报送由**服务端**在 `POST /api/logs` 真实拒收（HTTP 409），拒收与封锁日志（`blast_blocks`）同事务写入，前端不改出“能报”的假象。
+- 是否在窗内只看 `GET /api/clock` 的服务端时钟（`datetime.now(UTC)`），请求体里的 `client_clock` 仅留档，不参与判定。
+- 拒收提示明确要求把该断面测缝作业挪到窗外时段；窗未开始 / 已结束 / 解除后，报送恢复 201，认领判定照常。
+- 巡检员（inspector）可查看爆破窗与封锁日志，不能配窗、不能解除、不能报送（写操作 403）。
+- 接口：`GET/POST /api/blast-windows`、`DELETE /api/blast-windows/{id}`、`GET /api/blast-blocks`、`GET /api/clock`。
+
