@@ -32,6 +32,17 @@ docker compose up --build
 
 健康检查：`GET http://localhost:8201/api/health`
 
+## 爆破封锁窗
+
+掌子面爆破时段，该断面的测缝报送整体锁死。
+
+- 页眉「爆破窗」专页：测量员选断面、填起止时刻配窗，下方挂封锁日志；巡检员能看不能改（写操作返回 403）。
+- 服务端时钟是唯一判定依据（`GET /api/time`），客户端本机时间无法绕过。
+- 当前服务端时刻落在该断面任一窗内时，`POST /api/logs` 一律返回 **423 Locked**，不创建测缝记录，同时写入一条封锁日志（`blockade_logs`）；提示把报送挪到窗外再收。
+- 删除窗口或等时刻移出窗外后，同断面报送恢复 201，正常进待认领队列。
+
+接口：`GET/POST /api/blasting-windows`、`DELETE /api/blasting-windows/<id>`、`GET /api/blockade-logs`、`GET /api/time`。
+
 ## 种子
 
 | 桩号 | 收敛 | 结论 |
